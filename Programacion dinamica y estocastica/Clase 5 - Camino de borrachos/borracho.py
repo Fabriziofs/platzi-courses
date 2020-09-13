@@ -22,4 +22,4 @@ class BorrachoCircular(Borracho):
 
     def camina(self):
         # arriba    abajo   derecha izquierda
-        return random.choice([(0, 2), (0, -2), (2, 0), (-2, 0)])
+        return random.choice([(0, 2), (0, -1), (1, 0), (-2, 0)])
