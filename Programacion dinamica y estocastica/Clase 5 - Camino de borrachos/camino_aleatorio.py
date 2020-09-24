@@ -1,5 +1,5 @@
 from coordenada import Coordenada
-from borracho import BorrachoTradicional, BorrachoCircular
+from borracho import Borracho, BorrachoTradicional, BorrachoCircular
 from campo import Campo
 from bokeh.plotting import figure, show
 
@@ -13,8 +13,8 @@ def caminata(campo, borracho, pasos):
     return inicio.distancia(campo.obtener_coordenada(borracho))
 
 
-def simular_caminata(pasos, numero_de_intentos, tipo_de_borracho):
-    borracho = tipo_de_borracho(nombre='Fabrizio')
+def simular_caminata(pasos, numero_de_intentos, borracho):
+    borracho = borracho(nombre='Fabrizio')
     origen = Coordenada(0, 0)
     distancias = []
 
@@ -27,35 +27,39 @@ def simular_caminata(pasos, numero_de_intentos, tipo_de_borracho):
     return distancias
 
 
+def ejecutar_caminata(campo, borracho, distancia_de_caminata):
+    x_arr = []
+    y_arr = []
+
+    x_arr.append(campo.obtener_coordenada(borracho).x)
+    y_arr.append(campo.obtener_coordenada(borracho).y)
+
+    for _ in range(distancia_de_caminata):
+        campo.mover_borracho(borracho)
+        x_arr.append(campo.obtener_coordenada(borracho).x)
+        y_arr.append(campo.obtener_coordenada(borracho).y)
+
+    graficar(x_arr, y_arr)
+
+
 def graficar(x, y):
-    grafica = figure(title='Camino aleatorio',
-                     x_axis_label='pasos', y_axis_label='distancia')
-    grafica.line(x, y, legend='distancia media')
+    grafica = figure(title='Camino aleatorio')
+    grafica.line(x, y)
 
     show(grafica)
 
 
-def main(distancias_de_caminata, numero_de_intentos, tipo_de_borracho):
-    distancias_media_por_caminata = []
+def main(distancia_de_caminata, numero_de_intentos, borracho):
+    campo = Campo()
+    origen = Coordenada(0, 0)
+    borracho = borracho('Fabrizio')
+    campo.anadir_borracho(borracho, origen)
 
-    for pasos in distancias_de_caminata:
-        distancias = simular_caminata(
-            pasos, numero_de_intentos, tipo_de_borracho)
-        distancia_media = round(sum(distancias) / len(distancias), 4)
-        distancia_maxima = max(distancias)
-        distancia_minima = min(distancias)
-        distancias_media_por_caminata.append(distancia_media)
-
-        print(f'{tipo_de_borracho.__name__} caminata aleatoria de {pasos} pasos')
-        print(f'Media = {distancia_media}')
-        print(f'Max = {distancia_maxima}')
-        print(f'Min = {distancia_minima}')
-
-    graficar(distancias_de_caminata, distancias_media_por_caminata)
+    ejecutar_caminata(campo, borracho, distancia_de_caminata)
 
 
 if __name__ == '__main__':
-    distancias_de_caminata = [10, 100, 1_000, 10_000]
+    distancia_de_caminata = 100_000
     numero_de_intentos = 100
 
-    main(distancias_de_caminata, numero_de_intentos, BorrachoCircular)
+    main(distancia_de_caminata, numero_de_intentos, BorrachoCircular)
